@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=yes">
+  <meta name="theme-color" content="#102a43">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CRSA Reports">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <title>CRSA Staff Report Forms</title>
+  <style>
+    :root{
+      --navy:#102a43;--navy2:#173f5f;--blue:#1479b8;--blue2:#0e6396;
+      --pale:#edf6fb;--bg:#f3f6f8;--card:#fff;--line:#cbd7e2;--ink:#172b3a;
+      --muted:#607585;--danger:#b42318;--warning:#8a5d00;--success:#16794b;
+      --shadow:0 4px 18px rgba(16,42,67,.10);--radius:14px;
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+    button,input,select,textarea{font:inherit}
+    button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+    .appHeader{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 13px;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+    .headerInner{max-width:1180px;margin:auto;display:flex;align-items:center;gap:12px}
+    .brandMark{width:43px;height:43px;border-radius:11px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:900;letter-spacing:-1px;flex:0 0 auto}
+    .brandText{min-width:0;flex:1}.brandText h1{font-size:19px;line-height:1.15;margin:0}.brandText p{font-size:12px;margin:3px 0 0;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .saveState{font-size:11px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.14);white-space:nowrap}
+    .stepNav{max-width:1180px;margin:12px auto 0;display:flex;gap:7px;overflow-x:auto;padding:0 16px 2px;scrollbar-width:none}.stepNav::-webkit-scrollbar{display:none}
+    .stepBtn{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap}.stepBtn.active{background:#fff;color:var(--navy)}
+    main{max-width:1180px;margin:16px auto;padding:0 12px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:16px;align-items:start}
+    .panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .panelHead{padding:18px 18px 10px}.panelHead h2{margin:0;color:var(--navy);font-size:21px}.panelHead p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    .formBody{padding:0 16px 20px}
+    .section{display:none}.section.active{display:block}
+    .sectionTitle{display:flex;align-items:center;gap:9px;margin:16px 0 8px;color:var(--blue);font-size:17px}.sectionTitle span{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:var(--pale);font-size:13px}
+    .grid2,.grid3{display:grid;gap:12px}.grid2{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:repeat(3,1fr)}
+    label{display:block;margin:13px 0 6px;font-size:14px;font-weight:750;color:#243e50}.hint{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
+    input,select,textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
+    select{background-image:linear-gradient(45deg,transparent 50%,#607585 50%),linear-gradient(135deg,#607585 50%,transparent 50%);background-position:calc(100% - 18px) 20px,calc(100% - 13px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+    textarea{min-height:94px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,121,184,.14)}
+    .checkRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.checkPill{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-size:13px;background:#fff}.checkPill input{width:19px;height:19px;min-height:auto;margin:0;accent-color:var(--blue);-webkit-appearance:auto;appearance:auto}
+    .repeatList{display:grid;gap:11px;margin-top:10px}.repeatCard{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfdfe;position:relative}.repeatCard .removeBtn{position:absolute;right:9px;top:8px;width:32px;height:32px;border:0;border-radius:8px;background:#fff0ee;color:var(--danger);font-size:18px}.repeatCardTitle{font-weight:800;color:var(--navy);padding-right:38px;margin-bottom:3px}
+    .btn{border:0;border-radius:10px;min-height:45px;padding:11px 14px;font-weight:800;cursor:pointer}.btnPrimary{background:var(--blue);color:#fff}.btnPrimary:active{background:var(--blue2)}.btnSecondary{background:var(--pale);color:var(--navy)}.btnDanger{background:#fff0ee;color:var(--danger)}.btnGhost{background:#fff;border:1px solid var(--line);color:var(--navy)}.btnFull{width:100%}.addBtn{margin-top:10px}
+    .photoInput{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}.photoButton{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;border-radius:10px;background:var(--pale);color:var(--navy);font-weight:800;cursor:pointer}
+    .photoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.photoCard{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff;position:relative}.photoCard img{display:block;width:100%;height:150px;object-fit:cover}.photoCard input{border:0;border-top:1px solid var(--line);border-radius:0;min-height:42px;font-size:13px}.photoCard button{position:absolute;right:7px;top:7px;width:34px;height:34px;border:0;border-radius:9px;background:rgba(16,42,67,.82);color:#fff;font-size:17px}
+    .signatureWrap{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff}.signatureCanvas{display:block;width:100%;height:180px;touch-action:none;background:linear-gradient(#fff,#fff) padding-box,repeating-linear-gradient(0deg,transparent,transparent 30px,#edf2f5 31px) border-box}.sigActions{display:flex;justify-content:flex-end;border-top:1px solid var(--line);padding:7px;background:#f8fafb}.sigActions button{border:0;background:transparent;color:var(--blue);font-weight:800;padding:7px}
+    .sectionActions{display:flex;gap:9px;margin-top:20px}.sectionActions .btn{flex:1}
+    .previewPanel{position:sticky;top:142px}.previewTools{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 13px}.previewTools .btn{font-size:12px;min-height:39px;padding:9px 11px}
+    .alert{display:none;margin:0 16px 12px;padding:11px 12px;border-left:4px solid #e2a71a;background:#fff8df;color:#624b00;border-radius:5px;font-size:13px}.alert.show{display:block}
+    .reportPaper{background:#fff;margin:0 14px 18px;border:1px solid var(--line);min-height:650px;padding:28px;font:13px/1.55 Georgia,"Times New Roman",serif;color:#111;overflow-wrap:anywhere}
+    .reportPlaceholder{color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;text-align:center;padding:90px 10px}
+    .reportHeader{display:flex;align-items:center;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;gap:14px}.reportLogo{width:76px;height:62px;object-fit:contain}.reportBrand{flex:1}.reportBrand h1{margin:0;color:var(--navy);font:800 18px/1.2 Arial,sans-serif}.reportBrand p{margin:3px 0 0;color:#48606f;font:11px/1.3 Arial,sans-serif}.reportTitle{text-align:center;color:var(--navy);font:bold 18px/1.25 Arial,sans-serif;margin:20px 0}.reportMeta{width:100%;border-collapse:collapse;margin:0 0 17px}.reportMeta th,.reportMeta td{border:1px solid #b9c5ce;padding:6px 8px;text-align:left;vertical-align:top}.reportMeta th{width:32%;background:#edf6fb;font-family:Arial,sans-serif;font-size:11px;color:var(--navy)}
+    .reportPaper h2{font:bold 14px Arial,sans-serif;color:var(--navy);border-bottom:1px solid #aebdca;margin:20px 0 9px;padding-bottom:4px}.reportPaper h3{font:bold 12px Arial,sans-serif;color:#173f5f;margin:13px 0 5px}.reportPaper p{margin:0 0 8px}.reportPaper ul{margin:4px 0 10px;padding-left:20px}.reportPhotos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.reportPhoto{break-inside:avoid;border:1px solid #ccd5dc;padding:5px}.reportPhoto img{width:100%;height:210px;object-fit:contain;background:#f5f5f5}.reportPhoto figcaption{font:10px/1.35 Arial,sans-serif;margin-top:4px}.reportSignature{width:220px;max-height:95px;object-fit:contain;object-position:left center;border-bottom:1px solid #222}.disclaimer{font-size:10px;color:#4d5961;margin-top:22px;padding-top:8px;border-top:1px solid #ccd5dc}
+    .bottomBar{position:fixed;z-index:30;left:0;right:0;bottom:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid #d5dee5;display:none;gap:9px}.bottomBar .btn{flex:1}
+    .toast{position:fixed;z-index:99;left:50%;bottom:calc(95px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#172b3a;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .installNote{background:#eef8f2;border:1px solid #badfca;border-radius:10px;padding:11px 12px;font-size:13px;color:#195f3e;margin-top:13px}
+    @media(max-width:880px){body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}.appHeader{position:relative}.saveState{display:none}.stepNav{padding:0 0 2px}.stepNavWrap{background:var(--navy);padding-bottom:11px;position:sticky;top:0;z-index:19}.headerInner{padding:0}.stepNav{margin-top:0}.stepBtn{color:#fff}.stepBtn.active{color:var(--navy)}main{display:block;margin:0;padding:12px}.previewPanel{position:static;margin-top:14px;display:none}.previewPanel.mobileShow{display:block}.bottomBar{display:flex}.grid3{grid-template-columns:1fr 1fr}.reportPaper{padding:18px;margin:0 10px 15px}.previewPanel .panelHead{padding-top:15px}}
+    @media(max-width:520px){.grid2,.grid3{grid-template-columns:1fr}.checkRow{grid-template-columns:1fr}.photoGrid{grid-template-columns:1fr}.photoCard img{height:210px}.reportPhotos{grid-template-columns:1fr}.reportPhoto img{height:auto;max-height:320px}.sectionActions{position:sticky;bottom:74px;background:rgba(255,255,255,.96);margin:18px -16px -20px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #e0e7ec;z-index:10}.sectionActions .btn{min-width:0;padding-left:8px;padding-right:8px}.reportHeader{align-items:flex-start}.reportLogo{width:62px;height:50px}}
+    @page{size:A4;margin:13mm}
+    @media print{body{background:#fff;padding:0}.appHeader,.stepNavWrap,.formPanel,.previewTools,.panelHead,.alert,.bottomBar,.toast{display:none!important}main{display:block;max-width:none;margin:0;padding:0}.previewPanel{display:block!important;position:static;box-shadow:none}.panel{box-shadow:none;border-radius:0}.reportPaper{border:0;margin:0;padding:0;min-height:0;font-size:10.5pt}.reportPhotos{grid-template-columns:1fr 1fr}.reportPhoto img{height:210px}.reportPaper h2{break-after:avoid}.reportPhoto,.reportMeta,.reportSignature{break-inside:avoid}}
+
+    /* Jotform-style mobile workflow */
+    :root{--formPurple:#5b46d6;--formPurpleDark:#4634b7;--formLav:#f0edff;--formBg:#f5f4fa}
+    body{background:var(--formBg);padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+    .appHeader{position:relative;background:#fff;color:var(--ink);box-shadow:none;border-bottom:1px solid #e4e1ef;padding:calc(12px + env(safe-area-inset-top)) 16px 12px}
+    .brandMark{background:var(--formPurple);color:#fff;border-radius:10px}.brandText h1{font-size:18px}.brandText p{color:var(--muted);opacity:1}.saveState{color:var(--success);background:#eaf7f0;border:1px solid #c5e7d4}
+    .formProgressShell{background:#fff;border-bottom:1px solid #e4e1ef;position:sticky;top:0;z-index:18}
+    .formProgressInner{max-width:780px;margin:auto;padding:12px 16px;position:relative}.progressMeta{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);margin-bottom:7px}.progressMeta strong{color:var(--formPurple)}
+    .progressTrack{height:8px;background:#e9e6f4;border-radius:999px;overflow:hidden}.progressFill{height:100%;width:16.666%;background:linear-gradient(90deg,var(--formPurple),#7a66ed);border-radius:999px;transition:width .25s ease}
+    .staffActions{display:flex;gap:8px;margin-top:11px}.miniBtn{border:1px solid #ddd8ee;background:#fff;color:#403b52;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:750}.countBadge{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:var(--formLav);color:var(--formPurple);font-size:10px;margin-left:3px}
+    .stepNavWrap{display:none}
+    main{display:block;max-width:780px;margin:22px auto 40px;padding:0 14px}.panel{box-shadow:0 10px 35px rgba(48,39,88,.10);border:1px solid #e8e5f1;border-radius:16px}.formPanel{overflow:visible}.panelHead{padding:24px 24px 8px}.panelHead h2{font-size:25px;color:#28243a;margin-top:7px}.panelHead p{font-size:14px}.formBadge{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--formPurple);background:var(--formLav);border-radius:999px;padding:5px 8px}
+    .formBody{padding:0 24px 26px}.sectionTitle{display:none}.section{animation:pageIn .22s ease}@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    label{font-size:15px;color:#29263a;margin-top:18px}.requiredMark{color:#d92d20}.hint{font-size:12px;color:#716c80}
+    input,select,textarea{border:1.5px solid #d8d4e3;border-radius:10px;background:#fff;min-height:50px;padding:12px 13px}textarea{min-height:105px}input:focus,select:focus,textarea:focus{border-color:var(--formPurple);box-shadow:0 0 0 3px rgba(91,70,214,.12)}
+    input.fieldError,select.fieldError,textarea.fieldError{border-color:#d92d20;background:#fff8f7;box-shadow:0 0 0 3px rgba(217,45,32,.08)}.fieldErrorMessage{color:#b42318;font-size:12px;margin-top:5px}
+    .checkPill{border:1.5px solid #d8d4e3;border-radius:10px}.checkPill:has(input:checked){border-color:var(--formPurple);background:var(--formLav)}.checkPill input{accent-color:var(--formPurple)}
+    .conditionalGroup{margin-top:17px;padding:13px;border:1px solid #ddd8ee;border-radius:12px;background:#faf9ff}.conditionalGroup.isHidden{display:none}.conditionalLabel{font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--formPurple);text-transform:uppercase;margin-bottom:2px}
+    .repeatCard{border:1.5px solid #ddd8e8;background:#fbfaff;border-radius:13px}.repeatCardTitle{color:#39334d}.addBtn,.photoButton{background:var(--formLav);color:var(--formPurple);border:1px dashed #a69be4}
+    .btn{border-radius:9px}.btnPrimary{background:var(--formPurple)}.btnPrimary:active{background:var(--formPurpleDark)}.btnSecondary{background:#f0eef5;color:#39334d}.btnGhost{border-color:#d8d4e3;color:#39334d}.sectionActions{justify-content:space-between;border-top:1px solid #ece9f2;padding-top:18px;margin-top:28px}.sectionActions .btn{flex:0 0 auto;min-width:130px}.sectionActions .nextBtn,#generateBtn{margin-left:auto}
+    .previewPanel{display:none;position:fixed;inset:0;z-index:80;border-radius:0;overflow:auto;background:#f1f0f5}.previewPanel.mobileShow{display:block}.previewPanel .panelHead{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid #dedbe8}.previewTools{position:sticky;top:90px;z-index:2;background:#fff;border-bottom:1px solid #dedbe8;padding:10px 16px}.reportPaper{max-width:800px;margin:18px auto 40px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    .modalBackdrop{display:none;position:fixed;inset:0;z-index:100;background:rgba(28,25,38,.55);padding:16px;align-items:flex-end;justify-content:center}.modalBackdrop.show{display:flex}.modalCard{background:#fff;border-radius:18px 18px 0 0;width:min(720px,100%);max-height:88vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.25)}.modalHead{display:flex;justify-content:space-between;gap:15px;padding:22px;border-bottom:1px solid #ece9f2}.modalHead h2{margin:7px 0 3px}.modalHead p{margin:0;color:var(--muted);font-size:13px}.iconClose{width:39px;height:39px;border:0;background:#f0eef5;border-radius:50%;font-size:25px;color:#403b52}.savedReportsList{padding:12px 18px 20px}.savedEmpty{text-align:center;padding:45px 15px;color:var(--muted)}.savedCard{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px 4px;border-bottom:1px solid #ece9f2}.savedCard h3{margin:0 0 4px;font-size:15px;color:#29263a}.savedCard p{margin:0;color:var(--muted);font-size:12px}.savedCardActions{display:flex;align-items:center;gap:6px}.savedCardActions button{border:0;border-radius:8px;padding:8px 10px;font-size:12px;font-weight:750}.loadSaved{background:var(--formLav);color:var(--formPurple)}.deleteSaved{background:#fff0ee;color:#b42318}.modalFoot{padding:12px 18px 18px;text-align:right}
+    .bottomBar{display:none}.toast{bottom:calc(105px + env(safe-area-inset-bottom))}
+    @media(max-width:880px){.formProgressShell{top:0}.formProgressInner{padding:10px 14px}.progressMeta{margin-bottom:6px}.staffActions{margin-top:9px}main{padding:0 10px;margin:12px auto 24px}.panel{border-radius:13px}.panelHead{padding:20px 18px 7px}.panelHead h2{font-size:22px}.formBody{padding:0 17px 24px}.grid2,.grid3{grid-template-columns:1fr}.checkRow{grid-template-columns:1fr}.sectionActions{display:none}.bottomBar{display:flex}.bottomBar .btn{min-width:0;padding:10px 8px}.photoGrid{grid-template-columns:1fr 1fr}.modalBackdrop{padding:0}.modalCard{width:100%}}
+    @media(min-width:881px){.staffActions{position:absolute;right:16px;bottom:-46px;z-index:2}.formProgressInner{padding-bottom:14px}main{margin-top:54px}}
+    @media print{.formProgressShell,.modalBackdrop{display:none!important}.previewPanel{position:static!important;display:block!important;background:#fff;overflow:visible}.reportPaper{box-shadow:none;margin:0}}
+
+  </style>
+</head>
+<body>
+  <header class="appHeader">
+    <div class="headerInner">
+      <div class="brandMark">CRSA</div>
+      <div class="brandText"><h1>CRSA Staff Report Forms</h1><p>Mobile inspections and restoration reports</p></div>
+      <div class="saveState" id="saveState">Saved locally</div>
+    </div>
+  </header>
+
+  <section class="formProgressShell" aria-label="Form progress">
+    <div class="formProgressInner">
+      <div class="progressMeta"><span id="progressStep">Page 1 of 6</span><strong id="progressPercent">17% complete</strong></div>
+      <div class="progressTrack"><div id="progressFill" class="progressFill"></div></div>
+      <div class="staffActions">
+        <button type="button" class="miniBtn" id="saveDraftTop">Save draft</button>
+        <button type="button" class="miniBtn" id="savedReportsBtn">Saved reports <span id="savedCount" class="countBadge">0</span></button>
+      </div>
+    </div>
+  </section>
+  <div class="stepNavWrap">
+    <nav class="stepNav" aria-label="Report sections">
+      <button class="stepBtn active" data-step="0">1. Job</button>
+      <button class="stepBtn" data-step="1">2. Cause</button>
+      <button class="stepBtn" data-step="2">3. Findings</button>
+      <button class="stepBtn" data-step="3">4. Actions</button>
+      <button class="stepBtn" data-step="4">5. Photos</button>
+      <button class="stepBtn" data-step="5">6. Sign-off</button>
+    </nav>
+  </div>
+
+  <main>
+    <section class="panel formPanel">
+      <div class="panelHead"><div class="formBadge">CRSA FORM</div><h2 id="pageHeading">Job and attendance</h2><p id="pageHelp">Complete the required details, then continue to the next page.</p></div>
+      <form id="reportForm" class="formBody" autocomplete="on">
+        <section class="section active" data-section="0">
+          <div class="sectionTitle"><span>1</span>Job and attendance</div>
+          <div class="grid2">
+            <div><label for="reportType">Report type</label><select id="reportType"><option>Preliminary Water Damage Assessment</option><option>Mould Assessment</option><option>Water and Mould Damage Assessment</option><option>Progress Report</option><option>Completion Report</option></select></div>
+            <div><label for="jobNumber">CRSA job number</label><input id="jobNumber" placeholder="e.g. CRSA-2026-00123"></div>
+          </div>
+          <label for="property">Property address / claim reference <span class="requiredMark">*</span></label><textarea id="property" data-required-step="0" placeholder="Unit, street, suburb, state and postcode"></textarea>
+          <div class="grid2">
+            <div><label for="insured">Insured / client name</label><input id="insured" placeholder="Full name"></div>
+            <div><label for="claim">Insurance claim number</label><input id="claim" placeholder="Claim reference"></div>
+          </div>
+          <div class="grid2">
+            <div><label for="insurer">Insurer / referring client</label><input id="insurer" placeholder="Company"></div>
+            <div><label for="workOrder">Work order number</label><input id="workOrder" placeholder="Reference"></div>
+          </div>
+          <div class="grid3">
+            <div><label for="date">Attendance date <span class="requiredMark">*</span></label><input id="date" type="date" data-required-step="0"></div>
+            <div><label for="arrival">Arrival time</label><input id="arrival" type="time"></div>
+            <div><label for="departure">Departure time</label><input id="departure" type="time"></div>
+          </div>
+          <div class="grid2">
+            <div><label for="tech">Attending technician <span class="requiredMark">*</span></label><input id="tech" data-required-step="0" placeholder="Technician name"></div>
+            <div><label for="clientAttendance">Client in attendance?</label><select id="clientAttendance"><option>Yes</option><option>No</option><option>Part of attendance</option><option>Not confirmed</option></select></div>
+          </div>
+          <label for="clientDetails">People present / contact details <span class="hint">Record who supplied information during the inspection.</span></label><textarea id="clientDetails" placeholder="Name, role and contact details"></textarea>
+          <div class="installNote"><strong>Staff workspace:</strong> drafts and saved reports remain on this iPhone unless they are exported or your hosted version is connected to a central database.</div>
+          <div class="sectionActions"><button type="button" class="btn btnSecondary" disabled>Back</button><button type="button" class="btn btnPrimary nextBtn">Next: Cause</button></div>
+        </section>
+
+        <section class="section" data-section="1">
+          <div class="sectionTitle"><span>2</span>Cause and classification</div>
+          <label for="instructions">Instructions received</label><textarea id="instructions" placeholder="Further to instructions received from..."></textarea>
+          <label for="lossType">Type of loss</label><select id="lossType"><option>Water ingress</option><option>Escape of liquid</option><option>Storm / rainwater ingress</option><option>Sewage / contaminated water</option><option>Mould / microbial contamination</option><option>Fire / smoke</option><option>Other</option></select>
+          <label for="source">Reported source and cause <span class="requiredMark">*</span> <span class="hint">State who supplied the information, whether the cause was visually confirmed, and whether it has been rectified.</span></label><textarea id="source" data-required-step="1" placeholder="The insured advised... A plumber reportedly identified... The source was / was not rectified at the time of attendance..."></textarea>
+          <div class="conditionalGroup" id="waterClassFields">
+          <div class="conditionalLabel">Water-loss classification</div>
+          <div class="grid2">
+            <div><label for="category">Water category</label><select id="category"><option value="">Not applicable / select</option><option value="1">Category 1</option><option value="2">Category 2</option><option value="3">Category 3</option><option value="Unconfirmed">Unconfirmed</option></select></div>
+            <div><label for="lossClass">Class of water loss</label><select id="lossClass"><option value="">Not applicable / select</option><option value="1">Class 1</option><option value="2">Class 2</option><option value="3">Class 3</option><option value="4">Class 4</option><option value="Unconfirmed">Unconfirmed</option></select></div>
+          </div></div>
+          <div class="grid2">
+            <div><label for="dateLoss">Reported date of loss</label><input id="dateLoss" type="date"></div>
+            <div><label for="sourceStatus">Source status</label><select id="sourceStatus"><option>Reportedly rectified</option><option>Not rectified</option><option>Unable to confirm</option><option>Ongoing / intermittent</option><option>Not applicable</option></select></div>
+          </div>
+          <label>Inspection methods used</label>
+          <div class="checkRow">
+            <label class="checkPill"><input type="checkbox" id="methodVisual" checked>Visual inspection</label>
+            <label class="checkPill"><input type="checkbox" id="methodThermal" checked>Thermal imaging</label>
+            <label class="checkPill"><input type="checkbox" id="methodMoisture" checked>Moisture survey</label>
+            <label class="checkPill"><input type="checkbox" id="methodOdour">Odour assessment</label>
+            <label class="checkPill"><input type="checkbox" id="methodAir">Air / surface sampling</label>
+            <label class="checkPill"><input type="checkbox" id="methodOther">Other testing</label>
+          </div>
+          <label for="limitations">Access limitations / exclusions</label><textarea id="limitations" placeholder="Areas not accessed, concealed cavities, stored contents, floor coverings, height restrictions, hazardous materials or other limitations"></textarea>
+          <div class="sectionActions"><button type="button" class="btn btnSecondary prevBtn">Back</button><button type="button" class="btn btnPrimary nextBtn">Next: Findings</button></div>
+        </section>
+
+        <section class="section" data-section="2">
+          <div class="sectionTitle"><span>3</span>Inspection findings</div>
+          <p class="hint">Add each affected room or area separately. These will be formatted into the report.</p>
+          <div id="areasList" class="repeatList"></div>
+          <button type="button" class="btn btnSecondary btnFull addBtn" id="addArea">＋ Add affected area</button>
+          <div class="grid2">
+            <div><label for="dryReference">Dry reference readings</label><textarea id="dryReference" placeholder="Material, location, meter/scale and typical dry range"></textarea></div>
+            <div><label for="elevatedReadings">Elevated readings summary</label><textarea id="elevatedReadings" placeholder="Material, location, meter/scale and elevated reading"></textarea></div>
+          </div>
+          <label for="mouldFindings">Mould / microbial observations</label><textarea id="mouldFindings" placeholder="Visible growth, staining, odour, suspected condition, extent and location. Avoid identifying species without laboratory analysis."></textarea>
+          <label for="preExisting">Pre-existing damage / maintenance issues</label><textarea id="preExisting" placeholder="Describe separately from resultant damage, or enter None observed"></textarea>
+          <label for="contents">Contents observations</label><textarea id="contents" placeholder="Affected contents, accessibility, relocation or specialist assessment requirements"></textarea>
+          <div class="sectionActions"><button type="button" class="btn btnSecondary prevBtn">Back</button><button type="button" class="btn btnPrimary nextBtn">Next: Actions</button></div>
+        </section>
+
+        <section class="section" data-section="3">
+          <div class="sectionTitle"><span>4</span>Actions and recommendations</div>
+          <label for="immediateActions">Immediate actions completed</label><textarea id="immediateActions" placeholder="Water extraction, contents manipulation, HEPA vacuuming, antimicrobial application, removal, containment or make-safe works"></textarea>
+          <label>Equipment installed</label>
+          <div id="equipmentList" class="repeatList"></div>
+          <button type="button" class="btn btnSecondary btnFull addBtn" id="addEquipment">＋ Add equipment</button>
+          <label for="monitoring">Monitoring / drying notes</label><textarea id="monitoring" placeholder="Placement, operating conditions, target drying goal, monitoring frequency and access requirements"></textarea>
+          <label for="scope">Recommended remediation / proposed scope <span class="requiredMark">*</span> <span class="hint">Include removal, cleaning, drying, verification, specialist trades and authority requirements.</span></label><textarea id="scope" data-required-step="3" style="min-height:150px" placeholder="1. Establish controls and containment...&#10;2. Remove affected materials...&#10;3. HEPA vacuum and clean...&#10;4. Dry and monitor...&#10;5. Conduct post-remediation verification..."></textarea>
+          <label for="specialist">Further specialist assessment</label><textarea id="specialist" placeholder="Hygienist / IEP, plumber, electrician, engineer, asbestos assessment, builder, flooring specialist or other"></textarea>
+          <label for="recommendation">Overall recommendation</label><textarea id="recommendation" placeholder="Recommended next action and priority"></textarea>
+          <div class="sectionActions"><button type="button" class="btn btnSecondary prevBtn">Back</button><button type="button" class="btn btnPrimary nextBtn">Next: Photos</button></div>
+        </section>
+
+        <section class="section" data-section="4">
+          <div class="sectionTitle"><span>5</span>Photographs</div>
+          <p class="hint">On iPhone, choose “Take Photo” to use the camera. Large images are compressed before being stored in the draft.</p>
+          <label class="photoButton" for="photoInput">📷 Take or select photographs</label>
+          <input class="photoInput" id="photoInput" type="file" accept="image/*" capture="environment" multiple>
+          <div id="photoGrid" class="photoGrid"></div>
+          <label for="photoNotes">Additional photograph notes</label><textarea id="photoNotes" placeholder="Optional notes about photograph sequence or areas not photographed"></textarea>
+          <div class="sectionActions"><button type="button" class="btn btnSecondary prevBtn">Back</button><button type="button" class="btn btnPrimary nextBtn">Next: Sign-off</button></div>
+        </section>
+
+        <section class="section" data-section="5">
+          <div class="sectionTitle"><span>6</span>Conclusion and sign-off</div>
+          <label for="conclusion">Conclusion</label><textarea id="conclusion" style="min-height:140px" placeholder="Summarise the observed damage, recommended action and any uncertainty or limitations"></textarea>
+          <label for="authorName">Report prepared by <span class="requiredMark">*</span></label><input id="authorName" data-required-step="5" placeholder="Name and qualification">
+          <div class="grid2">
+            <div><label for="authorTitle">Position</label><input id="authorTitle" placeholder="e.g. Restoration Practitioner"></div>
+            <div><label for="reportDate">Report date</label><input id="reportDate" type="date"></div>
+          </div>
+          <label>Technician signature</label>
+          <div class="signatureWrap"><canvas id="signatureCanvas" class="signatureCanvas"></canvas><div class="sigActions"><button type="button" id="clearSignature">Clear signature</button></div></div>
+          <label for="businessDetails">Business footer details</label><textarea id="businessDetails">Cleaning &amp; Restoration Services Australia (CRSA)&#10;Quality Over Quantity</textarea>
+          <label class="photoButton" for="logoInput">🏢 Add company logo (optional)</label><input class="photoInput" id="logoInput" type="file" accept="image/*">
+          <div class="sectionActions"><button type="button" class="btn btnSecondary prevBtn">Back</button><button type="button" class="btn btnPrimary" id="generateBtn">Generate report</button></div>
+        </section>
+      </form>
+    </section>
+
+    <section class="panel previewPanel" id="previewPanel">
+      <div class="panelHead"><h2>Report preview</h2><p>Review every statement before issuing.</p></div>
+      <div class="previewTools"><button type="button" class="btn btnGhost" id="closePreviewBtn">← Back to form</button>
+        <button type="button" class="btn btnPrimary" id="printBtn">Print / PDF</button>
+        <button type="button" class="btn btnSecondary" id="shareBtn">Share</button>
+        <button type="button" class="btn btnSecondary" id="copyBtn">Copy text</button>
+        <button type="button" class="btn btnGhost" id="exportBtn">Export draft</button>
+        <button type="button" class="btn btnGhost" id="importBtn">Import draft</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+        <button type="button" class="btn btnDanger" id="newBtn">New report</button>
+      </div>
+      <div id="alert" class="alert"></div>
+      <article id="report" class="reportPaper"><div class="reportPlaceholder">Complete the assessment and select “Generate report”.</div></article>
+    </section>
+  </main>
+
+
+  <div class="modalBackdrop" id="savedReportsModal" aria-hidden="true">
+    <section class="modalCard" role="dialog" aria-modal="true" aria-labelledby="savedReportsTitle">
+      <div class="modalHead"><div><div class="formBadge">STAFF RECORDS</div><h2 id="savedReportsTitle">Saved reports</h2><p>Reports are stored on this device until exported or removed.</p></div><button type="button" class="iconClose" id="closeSavedReports" aria-label="Close">×</button></div>
+      <div id="savedReportsList" class="savedReportsList"></div>
+      <div class="modalFoot"><button type="button" class="btn btnSecondary" id="closeSavedReportsBottom">Close</button></div>
+    </section>
+  </div>
+
+  <div class="bottomBar">
+    <button type="button" class="btn btnSecondary" id="mobileBackBtn">Back</button>
+    <button type="button" class="btn btnGhost" id="mobileSaveBtn">Save</button>
+    <button type="button" class="btn btnPrimary" id="mobileNextBtn">Continue</button>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY='crsaReportBuilderV3';
+    const REPORTS_KEY='crsaSubmittedReportsV1';
+    const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+    let currentStep=0, photos=[], logoData='', signatureData='', saveTimer, lastReportText='', currentSubmissionId='';
+    const fieldIds=['reportType','jobNumber','property','insured','claim','insurer','workOrder','date','arrival','departure','tech','clientAttendance','clientDetails','instructions','lossType','source','category','lossClass','dateLoss','sourceStatus','limitations','dryReference','elevatedReadings','mouldFindings','preExisting','contents','immediateActions','monitoring','scope','specialist','recommendation','photoNotes','conclusion','authorName','authorTitle','reportDate','businessDetails'];
+    const checkIds=['methodVisual','methodThermal','methodMoisture','methodOdour','methodAir','methodOther'];
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    const nl=s=>esc(s).replace(/\n/g,'<br>');
+    const val=id=>document.getElementById(id)?.value.trim()||'';
+    const formatDate=s=>s?new Date(s+'T00:00:00').toLocaleDateString('en-AU',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+    const today=()=>new Date().toISOString().slice(0,10);
+    const showToast=message=>{const t=$('#toast');t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)};
+
+    const pageTitles=['Job and attendance','Cause and classification','Inspection findings','Actions and recommendations','Photographs','Conclusion and sign-off'];
+    const pageHelp=['Enter the job, property and attendance details.','Record the reported cause, source status and inspection methods.','Document each affected room, material and moisture finding.','Record work completed, equipment and the recommended scope.','Add inspection photographs and clear captions.','Review the conclusion, identify the author and sign the report.'];
+    function showStep(step){
+      currentStep=Math.max(0,Math.min(5,Number(step)));
+      $$('.section').forEach((el,i)=>el.classList.toggle('active',i===currentStep));
+      $$('.stepBtn').forEach((el,i)=>el.classList.toggle('active',i===currentStep));
+      const pct=Math.round(((currentStep+1)/6)*100);
+      $('#progressStep').textContent=`Page ${currentStep+1} of 6`;
+      $('#progressPercent').textContent=`${pct}% complete`;
+      $('#progressFill').style.width=`${pct}%`;
+      $('#pageHeading').textContent=pageTitles[currentStep];
+      $('#pageHelp').textContent=pageHelp[currentStep];
+      $('#mobileBackBtn').disabled=currentStep===0;
+      $('#mobileNextBtn').textContent=currentStep===5?'Generate report':'Continue';
+      $$('.stepBtn')[currentStep]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+      window.scrollTo({top:0,behavior:'smooth'});
+      toggleConditionals();
+    }
+    function clearFieldErrors(){
+      $$('.fieldError').forEach(el=>el.classList.remove('fieldError'));
+      $$('.fieldErrorMessage').forEach(el=>el.remove());
+    }
+    function validateStep(step=currentStep){
+      clearFieldErrors();
+      const fields=$$(`[data-required-step="${step}"]`);
+      let valid=true, first=null;
+      fields.forEach(el=>{if(!el.value.trim()){valid=false;first=first||el;el.classList.add('fieldError');const m=document.createElement('div');m.className='fieldErrorMessage';m.textContent='This field is required.';el.insertAdjacentElement('afterend',m)}});
+      if(step===2&&!collectAreas().some(a=>a.name||a.findings||a.materials)){valid=false;showToast('Add at least one affected area or finding')}
+      if(!valid&&first){first.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>first.focus(),250)}
+      return valid;
+    }
+    function toggleConditionals(){
+      const type=val('lossType').toLowerCase();
+      const water=/water|liquid|storm|sewage/.test(type);
+      $('#waterClassFields')?.classList.toggle('isHidden',!water);
+    }
+    $$('.stepBtn').forEach(btn=>btn.addEventListener('click',()=>showStep(btn.dataset.step)));
+    $$('.nextBtn').forEach(btn=>btn.addEventListener('click',()=>{if(validateStep())showStep(currentStep+1)}));
+    $$('.prevBtn').forEach(btn=>btn.addEventListener('click',()=>showStep(currentStep-1)));
+
+    function createArea(data={}){
+      const card=document.createElement('div');card.className='repeatCard areaCard';
+      card.innerHTML=`<button type="button" class="removeBtn" aria-label="Remove area">×</button><div class="repeatCardTitle">Affected area</div>
+        <label>Room / area</label><input class="areaName" placeholder="e.g. Kitchen" value="${esc(data.name||'')}">
+        <label>Materials and construction</label><textarea class="areaMaterials" placeholder="Plasterboard wall, timber skirting, concrete slab...">${esc(data.materials||'')}</textarea>
+        <label>Observed damage / condition</label><textarea class="areaFindings" placeholder="Water staining, swelling, delamination, visible growth, odour...">${esc(data.findings||'')}</textarea>
+        <label>Moisture readings</label><textarea class="areaReadings" placeholder="Location, material, meter/scale and reading">${esc(data.readings||'')}</textarea>`;
+      card.querySelector('.removeBtn').onclick=()=>{card.remove();renumberCards('.areaCard','Affected area');queueSave()};
+      $('#areasList').appendChild(card);renumberCards('.areaCard','Affected area');
+    }
+    function createEquipment(data={}){
+      const card=document.createElement('div');card.className='repeatCard equipmentCard';
+      card.innerHTML=`<button type="button" class="removeBtn" aria-label="Remove equipment">×</button><div class="repeatCardTitle">Equipment</div>
+        <div class="grid3"><div><label>Type</label><select class="eqType"><option>Air mover</option><option>LGR dehumidifier</option><option>Desiccant dehumidifier</option><option>Air filtration device</option><option>HEPA air scrubber</option><option>Heater</option><option>Other</option></select></div><div><label>Quantity</label><input class="eqQty" inputmode="numeric" placeholder="1" value="${esc(data.qty||'')}"></div><div><label>Area</label><input class="eqArea" placeholder="Room" value="${esc(data.area||'')}"></div></div>
+        <label>Equipment / serial notes</label><input class="eqNotes" placeholder="Optional ID, serial or placement notes" value="${esc(data.notes||'')}">`;
+      card.querySelector('.eqType').value=data.type||'Air mover';
+      card.querySelector('.removeBtn').onclick=()=>{card.remove();renumberCards('.equipmentCard','Equipment');queueSave()};
+      $('#equipmentList').appendChild(card);renumberCards('.equipmentCard','Equipment');
+    }
+    function renumberCards(selector,label){$$(selector).forEach((card,i)=>card.querySelector('.repeatCardTitle').textContent=`${label} ${i+1}`)}
+    $('#addArea').onclick=()=>{createArea();queueSave()}; $('#addEquipment').onclick=()=>{createEquipment();queueSave()};
+
+    async function compressImage(file,maxDimension=1200,quality=.68){
+      return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{let w=img.width,h=img.height;const scale=Math.min(1,maxDimension/Math.max(w,h));w=Math.round(w*scale);h=Math.round(h*scale);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);resolve(c.toDataURL('image/jpeg',quality))};img.src=reader.result};reader.readAsDataURL(file)});
+    }
+    $('#photoInput').addEventListener('change',async e=>{for(const file of e.target.files){try{photos.push({src:await compressImage(file),caption:''})}catch{showToast(`Could not add ${file.name}`)}}renderPhotos();queueSave();e.target.value=''});
+    $('#logoInput').addEventListener('change',async e=>{const file=e.target.files[0];if(file){try{logoData=await compressImage(file,700,.85);queueSave();showToast('Logo added')}catch{showToast('Could not add logo')}}e.target.value=''});
+    function renderPhotos(){
+      const grid=$('#photoGrid');grid.innerHTML='';photos.forEach((p,i)=>{const card=document.createElement('div');card.className='photoCard';card.innerHTML=`<img src="${p.src}" alt="Photograph ${i+1}"><button type="button" aria-label="Remove photo">×</button><input placeholder="Photo ${i+1} caption" value="${esc(p.caption||'')}">`;card.querySelector('button').onclick=()=>{photos.splice(i,1);renderPhotos();queueSave()};card.querySelector('input').oninput=e=>{photos[i].caption=e.target.value;queueSave()};grid.appendChild(card)})
+    }
+
+    const sigCanvas=$('#signatureCanvas'),sigCtx=sigCanvas.getContext('2d');let drawing=false,lastPoint=null;
+    function resizeSignature(){const ratio=Math.max(window.devicePixelRatio||1,1),rect=sigCanvas.getBoundingClientRect(),old=signatureData;sigCanvas.width=Math.round(rect.width*ratio);sigCanvas.height=Math.round(rect.height*ratio);sigCtx.setTransform(ratio,0,0,ratio,0,0);sigCtx.lineWidth=2.2;sigCtx.lineCap='round';sigCtx.strokeStyle='#152a3a';if(old){const img=new Image();img.onload=()=>sigCtx.drawImage(img,0,0,rect.width,rect.height);img.src=old}}
+    function point(e){const r=sigCanvas.getBoundingClientRect(),t=e.touches?.[0]||e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+    function startDraw(e){e.preventDefault();drawing=true;lastPoint=point(e)}function moveDraw(e){if(!drawing)return;e.preventDefault();const p=point(e);sigCtx.beginPath();sigCtx.moveTo(lastPoint.x,lastPoint.y);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();lastPoint=p}function endDraw(){if(!drawing)return;drawing=false;signatureData=sigCanvas.toDataURL('image/png');queueSave()}
+    if(window.PointerEvent){
+      sigCanvas.addEventListener('pointerdown',startDraw,{passive:false});
+      sigCanvas.addEventListener('pointermove',moveDraw,{passive:false});
+      sigCanvas.addEventListener('pointerup',endDraw);sigCanvas.addEventListener('pointercancel',endDraw);
+    }else{
+      sigCanvas.addEventListener('touchstart',startDraw,{passive:false});sigCanvas.addEventListener('touchmove',moveDraw,{passive:false});sigCanvas.addEventListener('touchend',endDraw);
+      sigCanvas.addEventListener('mousedown',startDraw);sigCanvas.addEventListener('mousemove',moveDraw);sigCanvas.addEventListener('mouseup',endDraw);
+    }
+    $('#clearSignature').onclick=()=>{signatureData='';sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);queueSave()};
+
+    function collectAreas(){return $$('.areaCard').map(c=>({name:c.querySelector('.areaName').value,materials:c.querySelector('.areaMaterials').value,findings:c.querySelector('.areaFindings').value,readings:c.querySelector('.areaReadings').value}))}
+    function collectEquipment(){return $$('.equipmentCard').map(c=>({type:c.querySelector('.eqType').value,qty:c.querySelector('.eqQty').value,area:c.querySelector('.eqArea').value,notes:c.querySelector('.eqNotes').value}))}
+    function collectData(){const fields={};fieldIds.forEach(id=>fields[id]=document.getElementById(id).value);const checks={};checkIds.forEach(id=>checks[id]=document.getElementById(id).checked);return{version:3,submissionId:currentSubmissionId,fields,checks,areas:collectAreas(),equipment:collectEquipment(),photos,logoData,signatureData,updated:new Date().toISOString()}}
+    function applyData(data={}){currentSubmissionId=data.submissionId||'';fieldIds.forEach(id=>{if(data.fields&&id in data.fields)document.getElementById(id).value=data.fields[id]});checkIds.forEach(id=>{if(data.checks&&id in data.checks)document.getElementById(id).checked=!!data.checks[id]});$('#areasList').innerHTML='';(data.areas?.length?data.areas:[{}]).forEach(createArea);$('#equipmentList').innerHTML='';(data.equipment||[]).forEach(createEquipment);photos=Array.isArray(data.photos)?data.photos:[];logoData=data.logoData||'';signatureData=data.signatureData||'';renderPhotos();requestAnimationFrame(resizeSignature)}
+    function saveNow(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(collectData()));$('#saveState').textContent='Saved locally';$('#saveState').style.background='rgba(255,255,255,.14)'}catch(e){$('#saveState').textContent='Storage full';$('#saveState').style.background='rgba(180,35,24,.7)'}}
+    function queueSave(){$('#saveState').textContent='Saving…';clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,450)}
+    $('#reportForm').addEventListener('input',queueSave);$('#reportForm').addEventListener('change',queueSave);
+
+    function methodsText(){const map={methodVisual:'visual inspection',methodThermal:'thermal imaging',methodMoisture:'moisture-meter survey',methodOdour:'odour assessment',methodAir:'air and/or surface sampling',methodOther:'other testing'};const list=checkIds.filter(id=>document.getElementById(id).checked).map(id=>map[id]);return list.length?list.join(', '):'a preliminary visual assessment'}
+    function bulletise(text){const lines=text.split(/\n+/).map(s=>s.trim()).filter(Boolean);return lines.length>1?`<ul>${lines.map(l=>`<li>${esc(l.replace(/^[-•\d.()\s]+/,''))}</li>`).join('')}</ul>`:`<p>${nl(text||'[To be completed]')}</p>`}
+
+    function getSavedReports(){try{return JSON.parse(localStorage.getItem(REPORTS_KEY)||'[]')}catch{return[]}}
+    function setSavedReports(items){localStorage.setItem(REPORTS_KEY,JSON.stringify(items));updateSavedCount()}
+    function updateSavedCount(){const c=getSavedReports().length;$('#savedCount').textContent=c}
+    function reportLabel(data){return data?.fields?.jobNumber||data?.fields?.property||'Untitled report'}
+    function saveSubmission(){
+      const data=collectData(), reports=getSavedReports();
+      const id=currentSubmissionId||data.submissionId||('r'+Date.now());
+      currentSubmissionId=id;data.submissionId=id;data.submittedAt=new Date().toISOString();
+      const idx=reports.findIndex(r=>r.submissionId===id);
+      if(idx>=0)reports[idx]=data;else reports.unshift(data);
+      setSavedReports(reports.slice(0,50));
+      return id;
+    }
+    function renderSavedReports(){
+      const list=$('#savedReportsList'), reports=getSavedReports();
+      if(!reports.length){list.innerHTML='<div class="savedEmpty"><strong>No saved reports yet</strong><br>Generate a report to save it to this device.</div>';return}
+      list.innerHTML=reports.map((r,i)=>{const d=r.fields||{},when=r.submittedAt||r.updated;return `<article class="savedCard"><div><h3>${esc(reportLabel(r))}</h3><p>${esc(d.reportType||'CRSA report')} · ${when?new Date(when).toLocaleString('en-AU'):'Date unavailable'}</p></div><div class="savedCardActions"><button type="button" class="loadSaved" data-index="${i}">Open</button><button type="button" class="deleteSaved" data-index="${i}">Delete</button></div></article>`}).join('');
+      $$('.loadSaved').forEach(b=>b.onclick=()=>{applyData(reports[Number(b.dataset.index)]);saveNow();closeSavedModal();showStep(0);showToast('Saved report opened')});
+      $$('.deleteSaved').forEach(b=>b.onclick=()=>{const index=Number(b.dataset.index);if(confirm('Delete this saved report from this device?')){reports.splice(index,1);setSavedReports(reports);renderSavedReports()}})
+    }
+    function openSavedModal(){renderSavedReports();$('#savedReportsModal').classList.add('show');$('#savedReportsModal').setAttribute('aria-hidden','false')}
+    function closeSavedModal(){$('#savedReportsModal').classList.remove('show');$('#savedReportsModal').setAttribute('aria-hidden','true')}
+
+    function buildReport(){
+      const missing=[];if(!val('property'))missing.push('property address / claim reference');if(!val('date'))missing.push('attendance date');if(!val('tech'))missing.push('technician');if(!val('source'))missing.push('reported source / cause');if(!collectAreas().some(a=>a.name||a.findings||a.materials))missing.push('inspection findings');if(!val('scope'))missing.push('recommended scope');if(val('category')==='3'&&!/hygien|iep|protocol|prv|verification/i.test(val('scope')+' '+val('specialist')+' '+val('recommendation')))missing.push('Category 3 hygienist / IEP / PRV consideration');
+      const alert=$('#alert');alert.classList.toggle('show',missing.length>0);alert.textContent=missing.length?'Items to confirm before issue: '+missing.join('; ')+'.':'';
+      const areas=collectAreas().filter(a=>a.name||a.materials||a.findings||a.readings);const equipment=collectEquipment().filter(e=>e.type||e.qty||e.area||e.notes);
+      const meta=[['CRSA job number',val('jobNumber')],['Property / claim reference',val('property')],['Insured / client',val('insured')],['Insurance claim number',val('claim')],['Insurer / referring client',val('insurer')],['Work order number',val('workOrder')],['Attendance',`${formatDate(val('date'))}${val('arrival')?' at '+val('arrival'):''}${val('departure')?' to '+val('departure'):''}`],['Attending technician',val('tech')],['Client in attendance',val('clientAttendance')]];
+      const reportType=val('reportType').toUpperCase();const brand=nl(val('businessDetails')).split('<br>');const intro=`Further to the instructions received${val('instructions')?' ('+esc(val('instructions'))+')':''}, a CRSA technician attended the above-mentioned property to conduct a ${esc(reportType.toLowerCase())}. The assessment included ${esc(methodsText())} to identify observable damage and assist with preparation of recommendations and a proposed scope of works.`;
+      const areaHtml=areas.length?areas.map((a,i)=>`<h3>${i+1}. ${esc(a.name||'Affected area')}</h3>${a.materials?`<p><strong>Materials / construction:</strong> ${nl(a.materials)}</p>`:''}${a.findings?`<p><strong>Observed condition:</strong> ${nl(a.findings)}</p>`:''}${a.readings?`<p><strong>Moisture readings:</strong> ${nl(a.readings)}</p>`:''}`).join(''):'<p>[Inspection findings to be completed]</p>';
+      const eqHtml=equipment.length?`<ul>${equipment.map(e=>`<li>${esc(e.qty||'1')} × ${esc(e.type)}${e.area?' — '+esc(e.area):''}${e.notes?' ('+esc(e.notes)+')':''}</li>`).join('')}</ul>`:'<p>No equipment recorded as installed.</p>';
+      const photosHtml=photos.length?`<h2>7.0 PHOTOGRAPHS</h2><div class="reportPhotos">${photos.map((p,i)=>`<figure class="reportPhoto"><img src="${p.src}" alt="Inspection photograph ${i+1}"><figcaption><strong>Photograph ${i+1}:</strong> ${esc(p.caption||'No caption entered')}</figcaption></figure>`).join('')}</div>${val('photoNotes')?`<p>${nl(val('photoNotes'))}</p>`:''}`:'';
+      const sigHtml=signatureData?`<img class="reportSignature" src="${signatureData}" alt="Technician signature">`:'';
+      const logo=logoData?`<img class="reportLogo" src="${logoData}" alt="CRSA logo">`:`<div class="brandMark reportLogo" style="display:grid;font-family:Arial">CRSA</div>`;
+      const category=val('category')?(val('category')==='Unconfirmed'?'Unconfirmed':'Category '+val('category')):'Not recorded / not applicable';const cls=val('lossClass')?(val('lossClass')==='Unconfirmed'?'Unconfirmed':'Class '+val('lossClass')):'Not recorded / not applicable';
+      const html=`<div class="reportHeader">${logo}<div class="reportBrand"><h1>${brand[0]||'Cleaning & Restoration Services Australia'}</h1><p>${brand.slice(1).join('<br>')}</p></div></div>
+        <div class="reportTitle">${esc(reportType)}</div>
+        <table class="reportMeta"><tbody>${meta.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${nl(v||'[Not provided]')}</td></tr>`).join('')}</tbody></table>
+        <p>${intro}</p>
+        <h2>1.0 CAUSE OF LOSS AND CLASSIFICATION</h2>
+        <p><strong>Type of loss:</strong> ${esc(val('lossType')||'Not confirmed')}</p><p><strong>Reported date of loss:</strong> ${esc(formatDate(val('dateLoss'))||'Not provided')}</p><p><strong>Reported source and cause:</strong> ${nl(val('source')||'[To be confirmed]')}</p><p><strong>Source status:</strong> ${esc(val('sourceStatus'))}</p><p><strong>Water damage classification:</strong> ${esc(category)}; ${esc(cls)}.</p>
+        <h2>2.0 INSPECTION FINDINGS</h2>${areaHtml}
+        <h3>Moisture survey summary</h3><p><strong>Dry reference readings:</strong> ${nl(val('dryReference')||'Not recorded.')}</p><p><strong>Elevated readings:</strong> ${nl(val('elevatedReadings')||'Not recorded.')}</p>
+        ${val('mouldFindings')?`<h3>Mould / microbial observations</h3><p>${nl(val('mouldFindings'))}</p>`:''}${val('contents')?`<h3>Contents observations</h3><p>${nl(val('contents'))}</p>`:''}
+        <h2>3.0 PRE-EXISTING DAMAGE AND LIMITATIONS</h2><p>${nl(val('preExisting')||'No pre-existing damage was identified during this preliminary inspection unless otherwise noted in this report.')}</p><p><strong>Inspection limitations:</strong> ${nl(val('limitations')||'Findings were limited to areas that were visible and accessible at the time of attendance. Concealed conditions may differ.')}</p>
+        <h2>4.0 ACTIONS COMPLETED</h2>${bulletise(val('immediateActions')||'No immediate restoration actions were recorded within this report.')}
+        <h3>Equipment installed</h3>${eqHtml}${val('monitoring')?`<h3>Monitoring / drying notes</h3><p>${nl(val('monitoring'))}</p>`:''}
+        <h2>5.0 RECOMMENDATIONS / PROPOSED SCOPE OF WORKS</h2>${bulletise(val('scope'))}${val('specialist')?`<h3>Further specialist assessment</h3><p>${nl(val('specialist'))}</p>`:''}${val('recommendation')?`<h3>Overall recommendation</h3><p>${nl(val('recommendation'))}</p>`:''}
+        <h2>6.0 CONCLUSION</h2><p>${nl(val('conclusion')||'The proposed scope and recommendations are based on conditions observable at the time of inspection. Concealed damage, ongoing moisture ingress, hazardous materials or additional affected areas identified during works may require further assessment, authority and variation. Liability and policy coverage remain subject to insurer determination.')}</p>
+        ${photosHtml}
+        <h2>${photos.length?'8.0':'7.0'} REPORT SIGN-OFF</h2>${sigHtml}<p><strong>${esc(val('authorName')||val('tech')||'[Report author]')}</strong><br>${esc(val('authorTitle')||'Cleaning & Restoration Services Australia')}<br>Report date: ${esc(formatDate(val('reportDate'))||formatDate(today()))}</p>
+        <div class="disclaimer">This report records observations made within accessible areas at the time of attendance. It is not a structural, electrical, plumbing, asbestos or indoor environmental certification unless expressly stated. Any draft text must be reviewed and approved by the report author before issue.</div>`;
+      $('#report').innerHTML=html;lastReportText=$('#report').innerText;queueSave();return html;
+    }
+    function openPreview(){if(!validateStep(currentStep)&&currentStep===5)return;buildReport();saveSubmission();$('#previewPanel').classList.add('mobileShow');document.body.style.overflow='hidden';setTimeout(()=>$('#previewPanel').scrollTo({top:0,behavior:'smooth'}),50);showToast('Report saved to this device')}
+    $('#generateBtn').onclick=openPreview;
+    $('#mobileBackBtn').onclick=()=>showStep(currentStep-1);
+    $('#mobileNextBtn').onclick=()=>{if(currentStep===5){openPreview()}else if(validateStep())showStep(currentStep+1)};
+    $('#mobileSaveBtn').onclick=()=>{saveNow();showToast('Draft saved on this device')};
+    $('#saveDraftTop').onclick=()=>{saveNow();showToast('Draft saved on this device')};
+    $('#savedReportsBtn').onclick=openSavedModal;$('#closeSavedReports').onclick=closeSavedModal;$('#closeSavedReportsBottom').onclick=closeSavedModal;
+    $('#savedReportsModal').onclick=e=>{if(e.target===$('#savedReportsModal'))closeSavedModal()};
+    $('#closePreviewBtn').onclick=()=>{$('#previewPanel').classList.remove('mobileShow');document.body.style.overflow='';showStep(currentStep)};
+    $('#printBtn').onclick=()=>{buildReport();window.print()};
+    $('#copyBtn').onclick=async()=>{buildReport();try{await navigator.clipboard.writeText(lastReportText);showToast('Report text copied')}catch{showToast('Copy unavailable in this browser')}};
+    $('#shareBtn').onclick=async()=>{buildReport();const title=`${val('jobNumber')||'CRSA'} — ${val('reportType')}`;if(navigator.share){try{await navigator.share({title,text:lastReportText})}catch(e){if(e.name!=='AbortError')showToast('Could not share report')}}else{try{await navigator.clipboard.writeText(lastReportText);showToast('Sharing unavailable — text copied')}catch{showToast('Sharing unavailable')}}};
+    $('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(collectData(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${(val('jobNumber')||'CRSA-report').replace(/[^a-z0-9-_]+/gi,'-')}.json`;a.click();URL.revokeObjectURL(a.href);showToast('Draft exported')};
+    $('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());applyData(data);saveNow();showToast('Draft imported')}catch{showToast('Invalid draft file')}e.target.value=''};
+    $('#newBtn').onclick=()=>{if(!confirm('Start a new report? This clears the current draft but keeps saved reports.'))return;localStorage.removeItem(STORAGE_KEY);document.body.style.overflow='';location.reload()};
+
+    window.addEventListener('resize',()=>{clearTimeout(window.__sigResize);window.__sigResize=setTimeout(resizeSignature,180)});
+    $('#lossType').addEventListener('change',()=>{toggleConditionals();queueSave()});
+    window.addEventListener('beforeunload',saveNow);
+    if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+    (function init(){
+      if(!val('date'))$('#date').value=today();if(!val('reportDate'))$('#reportDate').value=today();
+      const raw=localStorage.getItem(STORAGE_KEY);if(raw){try{applyData(JSON.parse(raw))}catch{createArea()}}else{createArea()}
+      if(!$('#areasList').children.length)createArea();resizeSignature();updateSavedCount();toggleConditionals();showStep(0);
+    })();
+  </script>
+</body>
+</html>
